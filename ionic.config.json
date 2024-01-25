@@ -1,0 +1,7 @@
+{
+  "name": "imgtxtionic",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react-vite"
+}
