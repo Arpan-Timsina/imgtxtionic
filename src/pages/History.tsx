@@ -22,15 +22,18 @@ const Tab3: React.FC = () => {
 
 const [history,setHistory]=useState<any>();
 
+// useEffect(() => {
+//   axios.get("http://127.0.0.1:8000/convert")
+//     .then(response => {
+//       // Handle the response data here, for example:
+//       console.log(response.data);
+//     })
+//     .catch(error => {
+//       // Handle errors if any
+//       console.error("Error fetching data:", error);
+//     });
+// }, []);
 
-useEffect(() =>{
-  axios.get("http://127.0.0.1:8000/convert").then((response=>{
-    response.data
-  })
-
-  
-
-})
 
   return (
     <IonPage>
