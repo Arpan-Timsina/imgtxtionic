@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Camera, CameraResultType, CameraSource } from "@capacitor/camera";
-import { IonButton, IonCard, IonSkeletonText } from "@ionic/react";
+import { IonButton,IonToast, IonCard, IonSkeletonText, IonCardContent, IonCardTitle } from "@ionic/react";
 import axios from "axios";
 
 const CameraComponent: React.FC = () => {
@@ -10,6 +10,7 @@ const CameraComponent: React.FC = () => {
     undefined
   );
   const [loading, setLoading] = useState<boolean | undefined>(undefined);
+  const [error, setError] = useState<string | undefined>(undefined);
 
   const takePhoto = async () => {
     try {
@@ -30,6 +31,7 @@ const CameraComponent: React.FC = () => {
       setImageFile(file);
     } catch (error) {
       console.error("Error taking photo", error);
+      setError("Error taking photo");
     }
   };
 
@@ -59,17 +61,32 @@ const CameraComponent: React.FC = () => {
       console.log("Image uploaded successfully:", response.data);
     } catch (error) {
       console.error("Error uploading image:", error);
+      setError("Error uploading image")
     }
   };
 
   return (
     <div style={{ padding: 10 }}>
+      
+      <IonToast isOpen={error!=null} message={error} duration={5000} position="top" buttons={[{
+        text: 'Close',
+        role: 'cancel',
+      }]}></IonToast>
       <IonButton onClick={takePhoto}>Take Photo</IonButton>
       {photoUrl && (
-        <>
+      
+        <IonCard> 
+          <IonCardTitle>Image</IonCardTitle>
+          
+
+
+         <IonCardContent> 
         <img src={photoUrl} alt="Captured" style={{ width: "100%" }} />
+        </IonCardContent>
+        <IonCard/>
         <IonButton onClick={uploadImage}>Upload Image</IonButton>
-        </>
+        </IonCard>
+        
       )}
 
       

@@ -1,5 +1,7 @@
 import { IonContent, IonHeader,IonList,IonLabel,IonItem, IonPage, IonTitle, IonToolbar } from '@ionic/react';
 import './History.css';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 
 const Tab3: React.FC = () => {
 
@@ -16,6 +18,19 @@ const Tab3: React.FC = () => {
     "A family's peaceful life is disrupted when they discover a hidden secret that changes everything."
 ];
 
+
+
+const [history,setHistory]=useState<any>();
+
+
+useEffect(() =>{
+  axios.get("http://127.0.0.1:8000/convert").then((response=>{
+    response.data
+  })
+
+  
+
+})
 
   return (
     <IonPage>
