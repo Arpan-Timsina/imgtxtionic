@@ -17,7 +17,7 @@ import { camera } from "ionicons/icons";
 import banner from "../assets/bannermain2.svg";
 import banner2 from "../assets/bannermain.svg";
 
-const url = "http://192.168.1.16:8000/convert"
+const url = "http://localhost:8000/convert";
 const CameraComponent: React.FC = () => {
   const [photoUrl, setPhotoUrl] = useState<string | undefined>(undefined);
   const [imageFile, setImageFile] = useState<File | undefined>(undefined);
@@ -33,6 +33,8 @@ const CameraComponent: React.FC = () => {
   const takePhoto = async () => {
     try {
       setLoadingCamera(true);
+      setPhotoUrl(undefined);
+      setConvertedText(undefined);
       const capturedPhoto = await Camera.getPhoto({
         quality: 90,
         allowEditing: false,
@@ -55,7 +57,6 @@ const CameraComponent: React.FC = () => {
       setError("Cancelled taking photo");
     }
   };
-
   const uploadImage = async () => {
     try {
       if (!imageFile) {
@@ -68,15 +69,11 @@ const CameraComponent: React.FC = () => {
       formData.append("name", photoUrl?.split("/").pop());
       formData.append("image", imageFile);
       setLoading(true);
-      const response = await axios.post(
-        url,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      const response = await axios.post(url, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
       if (response.status == 200) {
         setLoading(false);
@@ -119,18 +116,26 @@ const CameraComponent: React.FC = () => {
             marginBottom: "auto",
             display: "flex",
             flexDirection: "column",
+            // backgroundColor: "white",
+            marginTop: 60,
           }}
         >
-          <img
-            src={banner2}
+          <div
             style={{
-              objectFit: "cover",
-              paddingTop: 20,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              textAlign: "center",
             }}
-          ></img>
-          <h1 style={{ alignSelf: "center" }}>
-            <i>Scan Summarize</i>
-          </h1>
+          >
+            <h1 style={{ alignSelf: "center" }}>Scan Summarize</h1>
+            <p>
+              An app to extract text from images. Upload your photo, to get text
+              file instantly.
+            </p>
+          </div>
+
           <img
             src={banner}
             style={{
@@ -150,40 +155,67 @@ const CameraComponent: React.FC = () => {
         {photoUrl ? "Retake Photo" : "Take Photo"}
       </IonButton>
 
-      {convertedText && (
-          <IonCard style={{ padding: 20, width: "90%", height: 'auto' }}>
-            {convertedText}
-          </IonCard>
-        )}
       {photoUrl && (
-        <>
-          <IonCard
-            style={{
-              padding: 5,
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <IonCardTitle>Image</IonCardTitle>
-            <IonCardContent>
-              <img src={photoUrl} alt="Captured" style={{ width: "100%" }} />
-            </IonCardContent>
-            <IonCard />
-          </IonCard>
-          <IonButton onClick={uploadImage}>Upload Image</IonButton>
-        </>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            backgroundColor: "#333",
+            borderRadius: "10px",
+            margin: "20px",
+          }}
+        >
+          {convertedText ? (
+            <div
+              style={{
+                margin: "20px",
+                maxHeight: "65vh",
+                overflow: "scroll",
+                textAlign: "start",
+              }}
+            >
+              {convertedText}
+            </div>
+          ) : (
+            <div
+              style={{
+                padding: "10px",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                backgroundColor: "#333",
+                borderRadius: "10px",
+                margin: "20px",
+              }}
+            >
+              <img
+                src={photoUrl}
+                alt="Captured"
+                style={{ width: "100%", objectFit: "cover", maxHeight: "50vh" }}
+              />
+            </div>
+          )}
+        </div>
       )}
-
+      {photoUrl && !convertedText && (
+            <IonButton onClick={uploadImage}>
+              <p> Upload Image</p>
+              {loading && (
+                <IonSpinner
+                  name="lines"
+                  slot="end"
+                  style={{ marginLeft: "10px" }}
+                ></IonSpinner>
+              )}
+            </IonButton>
+          )}
       {loadingCamera && (
         <IonItem>
           <IonLabel>Loading Camera</IonLabel>
           <IonSpinner name="lines-sharp"></IonSpinner>
         </IonItem>
       )}
-
-      
     </div>
   );
 };
