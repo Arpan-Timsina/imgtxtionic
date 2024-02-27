@@ -11,13 +11,14 @@ import {
 import "./History.css";
 import { useEffect, useState } from "react";
 import axios from "axios";
-
-import { IonButtons, IonButton, IonModal } from "@ionic/react";
+import { Clipboard } from "@capacitor/clipboard";
+import { IonButtons, IonButton, IonModal, IonToast } from "@ionic/react";
 
 const url = "http://127.0.0.1:8000";
 
 const Tab3: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isToastOpen, setIsToastOpen] = useState(false);  
   const [history, setHistory] = useState<any>();
   const [currentHistory, setCurrentHistory] = useState<any | null>(null);
   const handleHisoryDetails = (item: any) => {
@@ -34,6 +35,13 @@ const Tab3: React.FC = () => {
         console.error("Error fetching data:", error);
       });
   }, []);
+
+  const writeToClipboard = async (text: string) => {
+    await Clipboard.write({
+      string: text,
+    });
+    setIsToastOpen(true);
+  };
 
   return (
     <IonPage>
@@ -105,12 +113,24 @@ const Tab3: React.FC = () => {
                   borderRadius: "10px",
                 }}
               >
-                <p>{currentHistory.converted_text}</p>
+                <p
+                  onClick={() =>
+                    writeToClipboard(currentHistory.converted_text)
+                  }
+                >
+                  {currentHistory.converted_text}
+                </p>
               </div>
             </div>
           </IonContent>
         )}
       </IonModal>
+      <IonToast
+        isOpen={isToastOpen}
+        onDidDismiss={() => setIsToastOpen(false)}
+        message="Copied to clipboard"
+        duration={2000}
+      />
     </IonPage>
   );
 };
