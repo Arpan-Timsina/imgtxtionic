@@ -85,7 +85,7 @@ const CameraComponent: React.FC = () => {
       setError("Error uploading image");
     }
   };
-
+  // returns someting 
   return (
     <div
       style={{
