@@ -18,12 +18,26 @@ const url = "http://127.0.0.1:8000";
 
 const Tab3: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [isToastOpen, setIsToastOpen] = useState(false);  
+  const [isToastOpen, setIsToastOpen] = useState(false);
   const [history, setHistory] = useState<any>();
   const [currentHistory, setCurrentHistory] = useState<any | null>(null);
   const handleHisoryDetails = (item: any) => {
     setIsOpen(true);
     setCurrentHistory(item);
+  };
+
+  const handleDelete = async () => {
+    try {
+      const res = await axios.delete(
+        url + `/convert?history_id=${currentHistory.id}`
+      );
+      console.log(res)
+    } catch (e) {
+      console.error("Error deleting data:", e);
+    } finally {
+      setIsOpen(false);
+      setCurrentHistory(null);
+    }
   };
   useEffect(() => {
     axios
@@ -34,7 +48,7 @@ const Tab3: React.FC = () => {
       .catch((error) => {
         console.error("Error fetching data:", error);
       });
-  }, []);
+  }, [isOpen]);
 
   const writeToClipboard = async (text: string) => {
     await Clipboard.write({
@@ -99,6 +113,33 @@ const Tab3: React.FC = () => {
             >
               <div
                 style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                }}
+              >
+                <IonButton
+                  style={{ width: "100%" }}
+                  color={"danger"}
+                  fill="outline"
+                  onClick={() => handleDelete()}
+                >
+                  Delete
+                </IonButton>
+                <IonButton
+                  fill="outline"
+                  color={"primary"}
+                  style={{ width: "100%" }}
+                  onClick={() =>
+                    writeToClipboard(currentHistory.converted_text)
+                  }
+                >
+                  Copy to clipboard
+                </IonButton>
+              </div>
+
+              <div
+                style={{
                   background: "#333",
                   padding: "10px",
                   borderRadius: "10px",
@@ -113,13 +154,7 @@ const Tab3: React.FC = () => {
                   borderRadius: "10px",
                 }}
               >
-                <p
-                  onClick={() =>
-                    writeToClipboard(currentHistory.converted_text)
-                  }
-                >
-                  {currentHistory.converted_text}
-                </p>
+                <p>{currentHistory.converted_text}</p>
               </div>
             </div>
           </IonContent>
