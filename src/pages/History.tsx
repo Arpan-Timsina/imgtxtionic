@@ -13,8 +13,9 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { Clipboard } from "@capacitor/clipboard";
 import { IonButtons, IonButton, IonModal, IonToast } from "@ionic/react";
+import { BASE_URL } from "../constant";
 
-const url = "http://127.0.0.1:8000";
+const url = BASE_URL
 
 const Tab3: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -88,7 +89,7 @@ const Tab3: React.FC = () => {
               >
                 <div>
                   Summary {index + 1}:{" "}
-                  {item.converted_text.substring(0, 50) + "..."}
+                  {item.converted_text?.substring(0, 50) + "..."}
                 </div>
               </div>
             ))}

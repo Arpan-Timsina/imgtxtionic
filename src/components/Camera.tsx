@@ -16,8 +16,9 @@ import axios from "axios";
 import { camera } from "ionicons/icons";
 import banner from "../assets/bannermain2.svg";
 import banner2 from "../assets/bannermain.svg";
+import { BASE_URL } from "../constant";
 
-const url = "http://localhost:8000/convert";
+const url = BASE_URL;
 const CameraComponent: React.FC = () => {
   const [photoUrl, setPhotoUrl] = useState<string | undefined>(undefined);
   const [imageFile, setImageFile] = useState<File | undefined>(undefined);
@@ -69,7 +70,7 @@ const CameraComponent: React.FC = () => {
       formData.append("name", photoUrl?.split("/").pop());
       formData.append("image", imageFile);
       setLoading(true);
-      const response = await axios.post(url, formData, {
+      const response = await axios.post(url + 'convert', formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
