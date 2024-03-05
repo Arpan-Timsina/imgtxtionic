@@ -3,10 +3,6 @@ import { Camera, CameraResultType, CameraSource } from "@capacitor/camera";
 import {
   IonButton,
   IonToast,
-  IonCard,
-  IonSkeletonText,
-  IonCardContent,
-  IonCardTitle,
   IonItem,
   IonLabel,
   IonSpinner,
@@ -29,9 +25,12 @@ const CameraComponent: React.FC = () => {
   const [loadingCamera, setLoadingCamera] = useState<boolean | undefined>(
     false
   );
+
+  const [sorryText, setSorryText] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   const takePhoto = async () => {
+    setSorryText(false);  
     try {
       setLoadingCamera(true);
       setPhotoUrl(undefined);
@@ -59,6 +58,7 @@ const CameraComponent: React.FC = () => {
     }
   };
   const uploadImage = async () => {
+    setSorryText(false);
     try {
       if (!imageFile) {
         console.error("No image file to upload");
@@ -70,7 +70,7 @@ const CameraComponent: React.FC = () => {
       formData.append("name", photoUrl?.split("/").pop());
       formData.append("image", imageFile);
       setLoading(true);
-      const response = await axios.post(url + 'convert', formData, {
+      const response = await axios.post(url + "convert", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -78,7 +78,11 @@ const CameraComponent: React.FC = () => {
 
       if (response.status == 200) {
         setLoading(false);
-        setConvertedText(response.data.text);
+        if (response.data.text.length == 0) {
+          setSorryText(true);
+        } else {
+          setConvertedText(response.data.text);
+        }
       }
     } catch (error) {
       setLoading(false);
@@ -86,7 +90,7 @@ const CameraComponent: React.FC = () => {
       setError("Error uploading image");
     }
   };
-  // returns someting 
+  // returns someting
   return (
     <div
       style={{
@@ -199,18 +203,36 @@ const CameraComponent: React.FC = () => {
           )}
         </div>
       )}
+      {sorryText && (
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            textAlign: "center",
+            backgroundColor: "#333",
+            margin: "20px",
+            borderRadius: "10px",
+          }}
+        >
+          <p>No text found in the image</p>
+        </div>
+      
+      ) }
       {photoUrl && !convertedText && (
-            <IonButton onClick={uploadImage}>
-              <p> Upload Image</p>
-              {loading && (
-                <IonSpinner
-                  name="lines"
-                  slot="end"
-                  style={{ marginLeft: "10px" }}
-                ></IonSpinner>
-              )}
-            </IonButton>
+        <IonButton onClick={uploadImage}>
+          <p> Upload Image</p>
+          {loading && (
+            <IonSpinner
+              name="lines"
+              slot="end"
+              style={{ marginLeft: "10px" }}
+            ></IonSpinner>
           )}
+        </IonButton>
+      )}
+
       {loadingCamera && (
         <IonItem>
           <IonLabel>Loading Camera</IonLabel>
